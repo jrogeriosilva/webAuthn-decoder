@@ -19,7 +19,7 @@ describe("DecodeTreeView", () => {
     expect(text).toContain("signCount");
   });
 
-  it("does NOT show deeply nested content on initial render (level >= 2 collapsed)", () => {
+  it("shows deeply nested content on initial render (all nodes start expanded)", () => {
     const tree = {
       a: {
         b: {
@@ -29,8 +29,6 @@ describe("DecodeTreeView", () => {
     };
     const { container } = render(<DecodeTreeView tree={tree} />);
     const text = container.textContent ?? "";
-    // Level 0 = root object, level 1 = a, level 2 = b (collapsed)
-    // So "deep" should NOT appear
-    expect(text).not.toContain("deep");
+    expect(text).toContain("deep");
   });
 });

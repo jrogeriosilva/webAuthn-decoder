@@ -3,9 +3,9 @@
  * into display-ready plain JSON for react-json-view-lite rendering.
  *
  * Applies display rules from 03-UI-SPEC.md §Pre-Processing Display Rules:
- * - Uint8Array -> hex preview string with byte count
+ * - Uint8Array -> hex string
  * - CoseKeyInfo fields -> "raw (name)" format
- * - AAGUID -> UUID + byte count + optional authenticator name
+ * - AAGUID -> UUID + optional authenticator name
  * - AuthDataFlags -> plain object with hex rawByte
  *
  * No console.log/debug of payload bytes per T-03-05.
@@ -24,34 +24,22 @@ import { bytesToUuid, resolveAaguid } from "@/lib/aaguid-registry";
 
 const MAX_RECURSION_DEPTH = 32;
 
-/**
- * Convert Uint8Array to a display-friendly hex string with byte count.
- * For arrays <= maxPreview bytes: full hex + " [N bytes]"
- * For arrays > maxPreview bytes: truncated hex + "... [N bytes]"
- */
-export function bytesToDisplayHex(
-  bytes: Uint8Array,
-  maxPreview = 16
-): string {
-  const preview = Array.from(bytes.slice(0, maxPreview))
+/** Convert Uint8Array to a display-friendly hex string. */
+export function bytesToDisplayHex(bytes: Uint8Array): string {
+  const hex = Array.from(bytes)
     .map((b) => b.toString(16).padStart(2, "0"))
     .join("");
-  const suffix = bytes.length > maxPreview ? "..." : "";
-  return `${preview}${suffix} [${bytes.length} bytes]`;
+  return hex;
 }
 
-/**
- * Format AAGUID bytes as UUID string with optional authenticator name.
- * Known: "uuid [16 bytes] -> Name"
- * Unknown: "uuid [16 bytes]"
- */
+/** Format AAGUID bytes as UUID string with optional authenticator name. */
 function formatAaguid(bytes: Uint8Array): string {
   const uuid = bytesToUuid(bytes);
   const name = resolveAaguid(bytes);
   if (name) {
-    return `${uuid} [16 bytes] -> ${name}`;
+    return `${uuid} -> ${name}`;
   }
-  return `${uuid} [16 bytes]`;
+  return uuid;
 }
 
 /**
@@ -205,7 +193,7 @@ function processPublicKeyCredential(
   data: DecodedPublicKeyCredential
 ): Record<string, unknown> {
   const tree: Record<string, unknown> = {
-    id: `${data.id} [${data.credentialId.length} bytes]`,
+    id: data.id,
     credentialId: bytesToDisplayHex(data.credentialId),
     type: data.credentialType,
   };
@@ -229,7 +217,7 @@ function processPublicKeyCredential(
   }
 
   if (data.response.publicKey) {
-    response.publicKey = bytesToDisplayHex(data.response.publicKey, 32);
+    response.publicKey = bytesToDisplayHex(data.response.publicKey);
   }
 
   if (data.response.attestationObject) {

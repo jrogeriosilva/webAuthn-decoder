@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react"
+import { useState, useMemo } from "react"
 import { AppHeader } from "@/components/AppHeader"
 import { PayloadInput } from "@/components/PayloadInput"
 import { OutputArea } from "@/components/OutputArea"
-import { decodePayload, decodeFullCredential } from "@/lib/decode-orchestrator"
+import { decodeFullCredential } from "@/lib/decode-orchestrator"
 import { autoDetectAndDecode } from "@/lib/payload-type-detection"
 import { tryExtractPublicKeyCredential } from "@/lib/publickeycredential-input"
 import type { PayloadType, DecodeResult } from "@/lib/types"
@@ -11,25 +11,21 @@ import type { FormatResult } from "@/lib/format-detection"
 
 function App() {
   const [formatResult, setFormatResult] = useState<FormatResult | null>(null)
-  const [decodeResult, setDecodeResult] = useState<DecodeResult | null>(null)
-  const [detectedType, setDetectedType] = useState<DetectedType | null>(null)
   const [rawInput, setRawInput] = useState("")
 
-  useEffect(() => {
+  const { detectedType, decodeResult } = useMemo((): {
+    detectedType: DetectedType | null
+    decodeResult: DecodeResult | null
+  } => {
     const envelope = tryExtractPublicKeyCredential(rawInput)
     if (envelope) {
-      setDetectedType("publicKeyCredential")
-      setDecodeResult(decodeFullCredential(envelope))
-      return
+      return { detectedType: "publicKeyCredential", decodeResult: decodeFullCredential(envelope) }
     }
     if (formatResult?.ok && formatResult.bytes.byteLength > 0) {
       const { detectedType: dt, result } = autoDetectAndDecode(formatResult.bytes)
-      setDetectedType(dt)
-      setDecodeResult(result)
-    } else {
-      setDetectedType(null)
-      setDecodeResult(null)
+      return { detectedType: dt, decodeResult: result }
     }
+    return { detectedType: null, decodeResult: null }
   }, [rawInput, formatResult])
 
   return (

@@ -59,21 +59,22 @@ function makeAttResult(
 // --- bytesToDisplayHex ---
 
 describe("bytesToDisplayHex", () => {
-  it("returns full hex + byte count for <=16 bytes", () => {
+  it("returns full hex for <=16 bytes", () => {
     const bytes = new Uint8Array([0xa1, 0xb2, 0xc3, 0xd4, 0xe5, 0xf6, 0xa7, 0xb8]);
-    expect(bytesToDisplayHex(bytes)).toBe("a1b2c3d4e5f6a7b8 [8 bytes]");
+    expect(bytesToDisplayHex(bytes)).toBe("a1b2c3d4e5f6a7b8");
   });
 
-  it("returns truncated hex with ellipsis for >16 bytes", () => {
+  it("returns full hex for >16 bytes (no truncation)", () => {
     const bytes32 = new Uint8Array(32).fill(0xab);
     const result = bytesToDisplayHex(bytes32);
-    expect(result).toMatch(/^[0-9a-f]{32}\.\.\. \[32 bytes\]$/);
+    expect(result).toBe("ab".repeat(32));
+    expect(result).not.toContain("...");
   });
 
   it("returns full hex for exactly 16 bytes (no ellipsis)", () => {
     const bytes16 = new Uint8Array(16).fill(0xcc);
     const result = bytesToDisplayHex(bytes16);
-    expect(result).toBe("cccccccccccccccccccccccccccccccc [16 bytes]");
+    expect(result).toBe("cccccccccccccccccccccccccccccccc");
     expect(result).not.toContain("...");
   });
 });
@@ -86,7 +87,7 @@ describe("preprocessForTree - attestationObject", () => {
     const { tree } = preprocessForTree(result);
     const authData = tree.authData as Record<string, unknown>;
     expect(authData.aaguid).toBe(
-      "08987058-cadc-4b81-b6e1-30de50dcbe96 [16 bytes] -> YubiKey 5 Series"
+      "08987058-cadc-4b81-b6e1-30de50dcbe96 -> YubiKey 5 Series"
     );
   });
 
@@ -102,7 +103,7 @@ describe("preprocessForTree - attestationObject", () => {
     const { tree } = preprocessForTree(result);
     const authData = tree.authData as Record<string, unknown>;
     expect(authData.aaguid).toBe(
-      "00000000-0000-0000-0000-000000000000 [16 bytes]"
+      "00000000-0000-0000-0000-000000000000"
     );
   });
 
@@ -152,12 +153,12 @@ describe("preprocessForTree - attestationObject", () => {
     expect(authData.signCount).toBe(42);
   });
 
-  it("formats rpIdHash as hex-with-count string", () => {
+  it("formats rpIdHash as hex string", () => {
     const result = makeAttResult();
     const { tree } = preprocessForTree(result);
     const authData = tree.authData as Record<string, unknown>;
     expect(typeof authData.rpIdHash).toBe("string");
-    expect(authData.rpIdHash).toContain("[32 bytes]");
+    expect(authData.rpIdHash).not.toContain("[");
   });
 
   it("does not include rawAuthData in tree", () => {
@@ -196,9 +197,9 @@ describe("preprocessForTree - assertion", () => {
     expect(tree).toHaveProperty("authenticatorData");
     expect(tree).not.toHaveProperty("authData");
 
-    // signature is hex-with-count
+    // signature is hex
     expect(typeof tree.signature).toBe("string");
-    expect(tree.signature).toContain("[3 bytes]");
+    expect(tree.signature).not.toContain("[");
 
     // clientDataJSON is a nested object
     const cdj = tree.clientDataJSON as Record<string, unknown>;
@@ -249,8 +250,8 @@ describe("preprocessForTree - raw-cbor", () => {
     };
     const { tree } = preprocessForTree(result);
     const nested = (tree as Record<string, unknown>).nested as Record<string, unknown>;
-    expect(nested.bytes).toBe("0102 [2 bytes]");
-    expect((tree as Record<string, unknown>).topBytes).toBe("ff [1 bytes]");
+    expect(nested.bytes).toBe("0102");
+    expect((tree as Record<string, unknown>).topBytes).toBe("ff");
   });
 });
 

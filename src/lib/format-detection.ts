@@ -66,7 +66,7 @@ export function detectAndNormalize(input: string): FormatResult {
   }
 
   // Step 1: Contains base64url-only chars (_ or -)? --> definitively base64url
-  if (/[_\-]/.test(trimmed)) {
+  if (/[_-]/.test(trimmed)) {
     return tryBase64url(trimmed, "base64url characters");
   }
 
