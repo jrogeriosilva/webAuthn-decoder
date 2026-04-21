@@ -1,16 +1,12 @@
-import type { DecodeResult, PayloadType } from "@/lib/types"
+import type { DecodeResult } from "@/lib/types"
 import { preprocessForTree } from "@/lib/tree-preprocess"
 import { DecodeTreeView } from "@/components/DecodeTreeView"
-import { DiagnosticSummary } from "@/components/DiagnosticSummary"
-import { ByteOffsetMap } from "@/components/ByteOffsetMap"
 
 interface OutputAreaProps {
   decodeResult: DecodeResult | null
-  payloadType: PayloadType
-  rawId?: Uint8Array
 }
 
-export function OutputArea({ decodeResult, payloadType, rawId }: OutputAreaProps) {
+export function OutputArea({ decodeResult }: OutputAreaProps) {
   if (!decodeResult) {
     return (
       <div className="min-h-[200px] rounded-md border border-border bg-card p-4 text-sm text-muted-foreground">
@@ -30,32 +26,11 @@ export function OutputArea({ decodeResult, payloadType, rawId }: OutputAreaProps
     )
   }
 
-  const { tree, annotations } = preprocessForTree(decodeResult, payloadType, { rawId })
-
-  // Byte offset map appears only when we have authenticatorData bytes.
-  let byteOffsetMap: React.ReactNode = null
-  if (decodeResult.type === "attestationObject") {
-    byteOffsetMap = (
-      <ByteOffsetMap
-        authData={decodeResult.data.authData}
-        rawAuthDataLength={decodeResult.data.rawAuthData.length}
-      />
-    )
-  } else if (decodeResult.type === "assertion") {
-    const ad = decodeResult.data.authenticatorData
-    const approxLength =
-      37 +
-      (ad.attestedCredentialData
-        ? 18 + ad.attestedCredentialData.credentialIdLength + 64
-        : 0)
-    byteOffsetMap = <ByteOffsetMap authData={ad} rawAuthDataLength={approxLength} />
-  }
+  const { tree } = preprocessForTree(decodeResult)
 
   return (
     <div className="min-h-[200px] rounded-md border border-border bg-card p-4">
-      {byteOffsetMap}
       <DecodeTreeView tree={tree} />
-      <DiagnosticSummary annotations={annotations} />
     </div>
   )
 }

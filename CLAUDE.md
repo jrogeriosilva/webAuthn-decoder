@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-**FIDO2 Lab** — browser-only developer tool for decoding and diagnosing FIDO2/WebAuthn protocol data. Users paste encoded payloads (base64url, hex, raw CBOR, or full `PublicKeyCredential` JSON) and get an interactive tree view with automatic diagnostics.
+**FIDO2 Lab** — browser-only developer tool for decoding FIDO2/WebAuthn protocol data. Users paste encoded payloads (base64url, hex, raw CBOR, or full `PublicKeyCredential` JSON) and get an interactive tree view.
 
 **Hard constraints:**
 - Browser-only. No server, no network calls with payload data — users paste production credentials.
@@ -28,7 +28,7 @@ Path alias: `@/*` → `src/*` (configured in both `vite.config.ts` and `vitest.c
 
 ## Architecture
 
-Data flows one direction: **raw text input → format detection → decode orchestrator → tree preprocess → render + diagnostics**.
+Data flows one direction: **raw text input → format detection → decode orchestrator → tree preprocess → render**.
 
 ### Entry point and state (`src/App.tsx`)
 
@@ -48,13 +48,12 @@ Data flows one direction: **raw text input → format detection → decode orche
 - `aaguid-registry.ts` + `src/data/aaguid-registry.json` — AAGUID → authenticator name lookup.
 - `format-detection.ts` — classifies raw user text as base64url / hex / raw-bytes / PublicKeyCredential JSON and returns `{ ok, bytes, format }`.
 - `publickeycredential-input.ts` — envelope extractor for pasted WebAuthn JSON; returns `{ rawId, innerBytes, innerKind }`.
-- `tree-preprocess.ts` — transforms `DecodeResult.data` into the `{ tree, annotations }` shape consumed by `DecodeTreeView`. This is where `Uint8Array` fields get rendered as hex strings, byte-fields are annotated, etc.
-- `diagnostics.ts` — produces `DiagnosticAnnotation[]` (field path + severity + message) consumed by the tree view and `DiagnosticSummary`.
-- `types.ts` — the canonical types (`DecodeResult`, `DecodedAttestationObject`, `DecodedAuthData`, `CoseKeyInfo`, `DiagnosticAnnotation`, `TreeData`, etc.). Touch this when changing decoder output shape — both producers and consumers depend on it.
+- `tree-preprocess.ts` — transforms `DecodeResult.data` into a plain object for `DecodeTreeView`. This is where `Uint8Array` fields get rendered as hex strings, etc.
+- `types.ts` — the canonical types (`DecodeResult`, `DecodedAttestationObject`, `DecodedAuthData`, `CoseKeyInfo`, etc.). Touch this when changing decoder output shape — both producers and consumers depend on it.
 
 ### UI layer (`src/components/`)
 
-`App` composes `AppHeader` + `PayloadInput` + `OutputArea`. `OutputArea` renders `DecodeTreeView` (via `react-json-view-lite`), `DiagnosticSummary`, `DiagnosticBadge`, `ByteOffsetMap`, `FormatBadge`, `ErrorMessage`. shadcn primitives live in `components/ui/` (`button`, `badge`, `textarea`) — style is `base-nova`, neutral base color, CSS variables on, icon library `lucide`.
+`App` composes `AppHeader` + `PayloadInput` + `OutputArea`. `OutputArea` renders `DecodeTreeView` (via `react-json-view-lite`) and `FormatBadge`. shadcn primitives live in `components/ui/` (`button`, `badge`, `textarea`) — style is `base-nova`, neutral base color, CSS variables on, icon library `lucide`.
 
 ### Result-type contract
 

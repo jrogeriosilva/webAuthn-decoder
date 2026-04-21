@@ -83,7 +83,7 @@ describe("bytesToDisplayHex", () => {
 describe("preprocessForTree - attestationObject", () => {
   it("formats AAGUID with arrow + name for known authenticator", () => {
     const result = makeAttResult();
-    const { tree } = preprocessForTree(result, "registration");
+    const { tree } = preprocessForTree(result);
     const authData = tree.authData as Record<string, unknown>;
     expect(authData.aaguid).toBe(
       "08987058-cadc-4b81-b6e1-30de50dcbe96 [16 bytes] -> YubiKey 5 Series"
@@ -99,7 +99,7 @@ describe("preprocessForTree - attestationObject", () => {
         coseKey: makeCoseKey(),
       },
     });
-    const { tree } = preprocessForTree(result, "registration");
+    const { tree } = preprocessForTree(result);
     const authData = tree.authData as Record<string, unknown>;
     expect(authData.aaguid).toBe(
       "00000000-0000-0000-0000-000000000000 [16 bytes]"
@@ -108,7 +108,7 @@ describe("preprocessForTree - attestationObject", () => {
 
   it("formats COSE key fields as 'raw (name)'", () => {
     const result = makeAttResult();
-    const { tree } = preprocessForTree(result, "registration");
+    const { tree } = preprocessForTree(result);
     const authData = tree.authData as Record<string, unknown>;
     const attCred = authData.attestedCredentialData as Record<string, unknown>;
     const coseKey = attCred.coseKey as Record<string, unknown>;
@@ -126,7 +126,7 @@ describe("preprocessForTree - attestationObject", () => {
         coseKey: makeCoseKey({ crv: undefined }),
       },
     });
-    const { tree } = preprocessForTree(result, "registration");
+    const { tree } = preprocessForTree(result);
     const authData = tree.authData as Record<string, unknown>;
     const attCred = authData.attestedCredentialData as Record<string, unknown>;
     const coseKey = attCred.coseKey as Record<string, unknown>;
@@ -135,7 +135,7 @@ describe("preprocessForTree - attestationObject", () => {
 
   it("formats flags as plain object with hex rawByte", () => {
     const result = makeAttResult();
-    const { tree } = preprocessForTree(result, "registration");
+    const { tree } = preprocessForTree(result);
     const authData = tree.authData as Record<string, unknown>;
     const flags = authData.flags as Record<string, unknown>;
     expect(flags.up).toBe(true);
@@ -147,14 +147,14 @@ describe("preprocessForTree - attestationObject", () => {
 
   it("passes signCount as plain number", () => {
     const result = makeAttResult();
-    const { tree } = preprocessForTree(result, "registration");
+    const { tree } = preprocessForTree(result);
     const authData = tree.authData as Record<string, unknown>;
     expect(authData.signCount).toBe(42);
   });
 
   it("formats rpIdHash as hex-with-count string", () => {
     const result = makeAttResult();
-    const { tree } = preprocessForTree(result, "registration");
+    const { tree } = preprocessForTree(result);
     const authData = tree.authData as Record<string, unknown>;
     expect(typeof authData.rpIdHash).toBe("string");
     expect(authData.rpIdHash).toContain("[32 bytes]");
@@ -162,7 +162,7 @@ describe("preprocessForTree - attestationObject", () => {
 
   it("does not include rawAuthData in tree", () => {
     const result = makeAttResult();
-    const { tree } = preprocessForTree(result, "registration");
+    const { tree } = preprocessForTree(result);
     expect(tree).not.toHaveProperty("rawAuthData");
     const authData = tree.authData as Record<string, unknown>;
     expect(authData).not.toHaveProperty("rawAuthData");
@@ -192,7 +192,7 @@ describe("preprocessForTree - assertion", () => {
         },
       },
     };
-    const { tree } = preprocessForTree(assertionResult, "authentication");
+    const { tree } = preprocessForTree(assertionResult);
     expect(tree).toHaveProperty("authenticatorData");
     expect(tree).not.toHaveProperty("authData");
 
@@ -224,7 +224,7 @@ describe("preprocessForTree - clientDataJSON", () => {
         extraFields: { foo: "bar" },
       },
     };
-    const { tree } = preprocessForTree(result, "registration");
+    const { tree } = preprocessForTree(result);
     expect(tree.type).toBe("webauthn.create");
     expect(tree.challenge).toBe("abc123");
     expect(tree.origin).toBe("https://example.com");
@@ -247,31 +247,19 @@ describe("preprocessForTree - raw-cbor", () => {
         topBytes: new Uint8Array([0xff]),
       },
     };
-    const { tree } = preprocessForTree(result, "raw-cbor");
+    const { tree } = preprocessForTree(result);
     const nested = (tree as Record<string, unknown>).nested as Record<string, unknown>;
     expect(nested.bytes).toBe("0102 [2 bytes]");
     expect((tree as Record<string, unknown>).topBytes).toBe("ff [1 bytes]");
   });
 });
 
-// --- preprocessForTree: annotations ---
-
-describe("preprocessForTree - annotations", () => {
-  it("returns runDiagnostics output as annotations", () => {
-    const result = makeAttResult({ flags: makeFlags({ at: false }) });
-    const { annotations } = preprocessForTree(result, "registration");
-    expect(annotations.length).toBeGreaterThan(0);
-    expect(annotations[0].fieldPath).toBe("authData.flags.at");
-  });
-});
-
 // --- preprocessForTree: error results ---
 
 describe("preprocessForTree - error results", () => {
-  it("returns empty tree and no annotations for ok:false", () => {
+  it("returns empty tree for ok:false", () => {
     const result: DecodeResult = { ok: false, error: "bad input" };
-    const { tree, annotations } = preprocessForTree(result, "registration");
+    const { tree } = preprocessForTree(result);
     expect(tree).toEqual({});
-    expect(annotations).toEqual([]);
   });
 });

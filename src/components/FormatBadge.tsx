@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge"
 
 interface FormatBadgeProps {
-  format: "base64url" | "hex" | "cbor" | null
+  format: "base64url" | "hex" | "cbor" | "json" | null
 }
 
 export function FormatBadge({ format }: FormatBadgeProps) {

@@ -3,6 +3,7 @@ import { hexToBytes } from "@/lib/hex-utils";
 
 export type FormatResult =
   | { ok: true; format: "base64url" | "hex" | "cbor"; bytes: ArrayBuffer }
+  | { ok: true; format: "json"; bytes: ArrayBuffer }
   | { ok: false; error: string };
 
 /**
@@ -42,6 +43,16 @@ export function detectAndNormalize(input: string): FormatResult {
       ok: false,
       error: "No input: paste or type a FIDO2 payload to begin",
     };
+  }
+
+  // Step -1: Starts with '{' -- try to parse as JSON (PublicKeyCredential envelope)
+  if (trimmed.startsWith("{")) {
+    try {
+      JSON.parse(trimmed);
+      return { ok: true, format: "json", bytes: new ArrayBuffer(0) };
+    } catch {
+      return { ok: false, error: "Invalid JSON: could not parse input as JSON" };
+    }
   }
 
   // Step 0: Check for 0x/0X prefix -- definitively hex

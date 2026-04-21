@@ -3,7 +3,7 @@
  *
  * Detects when the user pastes a full PublicKeyCredential JSON response
  * (containing rawId + response.attestationObject or response.authenticatorData)
- * and extracts the relevant bytes for decoding + cross-field diagnostics (DIAG-02).
+ * and extracts the relevant bytes for decoding.
  *
  * All parsing is defensive: malformed input returns null, never throws.
  * No console.log/debug of payload bytes per T-03-05.

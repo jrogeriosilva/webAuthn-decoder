@@ -7,15 +7,12 @@
  * - CoseKeyInfo fields -> "raw (name)" format
  * - AAGUID -> UUID + byte count + optional authenticator name
  * - AuthDataFlags -> plain object with hex rawByte
- * - Runs diagnostics via runDiagnostics (Task 2)
  *
  * No console.log/debug of payload bytes per T-03-05.
  */
 
 import type {
   DecodeResult,
-  PayloadType,
-  TreeData,
   DecodedAuthData,
   DecodedAssertion,
   DecodedClientDataJSON,
@@ -23,7 +20,6 @@ import type {
   AuthDataFlags,
 } from "@/lib/types";
 import { bytesToUuid, resolveAaguid } from "@/lib/aaguid-registry";
-import { runDiagnostics } from "@/lib/diagnostics";
 
 const MAX_RECURSION_DEPTH = 32;
 
@@ -203,49 +199,38 @@ function processClientDataJSON(
 
 /**
  * Main preprocessing entry point.
- * Transforms a DecodeResult into a display-ready TreeData with annotations.
+ * Transforms a DecodeResult into a display-ready plain object for react-json-view-lite.
  */
 export function preprocessForTree(
-  result: DecodeResult,
-  payloadType: PayloadType,
-  ctx?: { rawId?: Uint8Array }
-): TreeData {
+  result: DecodeResult
+): { tree: Record<string, unknown> } {
   if (!result.ok) {
-    return { tree: {}, annotations: [] };
+    return { tree: {} };
   }
-
-  const annotations = runDiagnostics(result, payloadType, {
-    rawId: ctx?.rawId,
-  });
 
   let tree: Record<string, unknown>;
 
   switch (result.type) {
-    case "attestationObject": {
+    case "attestationObject":
       tree = {
         fmt: result.data.fmt,
         authData: processAuthData(result.data.authData),
         attStmt: deepConvert(result.data.attStmt, 0),
       };
       break;
-    }
-    case "assertion": {
+    case "assertion":
       tree = processAssertion(result.data);
       break;
-    }
-    case "clientDataJSON": {
+    case "clientDataJSON":
       tree = processClientDataJSON(result.data);
       break;
-    }
-    case "authenticatorData": {
+    case "authenticatorData":
       tree = processAuthData(result.data);
       break;
-    }
-    case "raw-cbor": {
+    case "raw-cbor":
       tree = deepConvert(result.data, 0) as Record<string, unknown>;
       break;
-    }
   }
 
-  return { tree, annotations };
+  return { tree };
 }

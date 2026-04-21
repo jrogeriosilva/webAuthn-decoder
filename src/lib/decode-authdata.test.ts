@@ -34,7 +34,7 @@ function buildAuthDataWithAT(
 
   // EC2 P-256 COSE key: { 1: 2, 3: -7, -1: 1, -2: x_bytes, -3: y_bytes }
   const coseKeyBytes = encode(
-    new Map([
+    new Map<number, number | Uint8Array>([
       [1, 2],
       [3, -7],
       [-1, 1],

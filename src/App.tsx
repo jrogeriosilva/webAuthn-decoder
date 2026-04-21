@@ -12,29 +12,21 @@ function App() {
   const [formatResult, setFormatResult] = useState<FormatResult | null>(null)
   const [decodeResult, setDecodeResult] = useState<DecodeResult | null>(null)
   const [rawInput, setRawInput] = useState("")
-  const [rawId, setRawId] = useState<Uint8Array | undefined>(undefined)
-  const [inferredPayloadType, setInferredPayloadType] = useState<PayloadType | undefined>(undefined)
 
   useEffect(() => {
     const envelope = tryExtractPublicKeyCredential(rawInput)
     if (envelope) {
       const innerType: PayloadType =
         envelope.innerKind === "attestationObject" ? "registration" : "authentication"
-      setRawId(envelope.rawId)
-      setInferredPayloadType(innerType)
       setDecodeResult(decodePayload(innerType, envelope.innerBytes))
       return
     }
-    setRawId(undefined)
-    setInferredPayloadType(undefined)
     if (formatResult?.ok) {
       setDecodeResult(decodePayload(payloadType, formatResult.bytes))
     } else {
       setDecodeResult(null)
     }
   }, [rawInput, formatResult, payloadType])
-
-  const effectivePayloadType: PayloadType = inferredPayloadType ?? payloadType
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -49,8 +41,6 @@ function App() {
           />
           <OutputArea
             decodeResult={decodeResult}
-            payloadType={effectivePayloadType}
-            rawId={rawId}
           />
         </main>
       </div>

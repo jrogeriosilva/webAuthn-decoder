@@ -21,7 +21,7 @@ function buildAuthDataWithAT(): Uint8Array {
   const aaguid = new Uint8Array(16).fill(0xaa);
   const credId = new Uint8Array(16).fill(0xbb);
   const coseKeyBytes = encode(
-    new Map([
+    new Map<number, number | Uint8Array>([
       [1, 2],
       [3, -7],
       [-1, 1],
@@ -124,7 +124,7 @@ describe("decodeAttestationObject", () => {
       const bytes = buildAttestationObjectCbor("none");
       // bytes.buffer may be a pooled buffer larger than bytes.byteLength.
       // Slice the underlying ArrayBuffer to get a correctly-bounded copy.
-      const exactBuffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+      const exactBuffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength) as ArrayBuffer;
       const result = decodeAttestationObject(exactBuffer);
       expect(result.ok).toBe(true);
     });

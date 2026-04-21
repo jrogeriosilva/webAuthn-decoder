@@ -72,18 +72,6 @@ export type DecodeResult =
   | { ok: true; type: "raw-cbor"; data: unknown }
   | { ok: false; error: string; suggestion?: string };
 
-/** A diagnostic finding tied to a specific field path in the decoded tree. */
-export interface DiagnosticAnnotation {
-  fieldPath: string;
-  severity: "warning" | "error";
-  message: string;
-}
-
-/** Preprocessed tree data ready for react-json-view-lite rendering. */
-export interface TreeData {
-  tree: Record<string, unknown>;
-  annotations: DiagnosticAnnotation[];
-}
 
 /** Extracted fields from a PublicKeyCredential JSON envelope. */
 export interface PublicKeyCredentialEnvelope {
