@@ -2,31 +2,35 @@ import { useState, useEffect } from "react"
 import { AppHeader } from "@/components/AppHeader"
 import { PayloadInput } from "@/components/PayloadInput"
 import { OutputArea } from "@/components/OutputArea"
-import { decodePayload } from "@/lib/decode-orchestrator"
+import { decodePayload, decodeFullCredential } from "@/lib/decode-orchestrator"
+import { autoDetectAndDecode } from "@/lib/payload-type-detection"
 import { tryExtractPublicKeyCredential } from "@/lib/publickeycredential-input"
 import type { PayloadType, DecodeResult } from "@/lib/types"
+type DetectedType = PayloadType | "publicKeyCredential"
 import type { FormatResult } from "@/lib/format-detection"
 
 function App() {
-  const [payloadType, setPayloadType] = useState<PayloadType>("registration")
   const [formatResult, setFormatResult] = useState<FormatResult | null>(null)
   const [decodeResult, setDecodeResult] = useState<DecodeResult | null>(null)
+  const [detectedType, setDetectedType] = useState<DetectedType | null>(null)
   const [rawInput, setRawInput] = useState("")
 
   useEffect(() => {
     const envelope = tryExtractPublicKeyCredential(rawInput)
     if (envelope) {
-      const innerType: PayloadType =
-        envelope.innerKind === "attestationObject" ? "registration" : "authentication"
-      setDecodeResult(decodePayload(innerType, envelope.innerBytes))
+      setDetectedType("publicKeyCredential")
+      setDecodeResult(decodeFullCredential(envelope))
       return
     }
-    if (formatResult?.ok) {
-      setDecodeResult(decodePayload(payloadType, formatResult.bytes))
+    if (formatResult?.ok && formatResult.bytes.byteLength > 0) {
+      const { detectedType: dt, result } = autoDetectAndDecode(formatResult.bytes)
+      setDetectedType(dt)
+      setDecodeResult(result)
     } else {
+      setDetectedType(null)
       setDecodeResult(null)
     }
-  }, [rawInput, formatResult, payloadType])
+  }, [rawInput, formatResult])
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -34,13 +38,12 @@ function App() {
         <AppHeader />
         <main className="flex flex-col gap-8">
           <PayloadInput
-            payloadType={payloadType}
-            onPayloadTypeChange={setPayloadType}
             onFormatResult={setFormatResult}
             onRawInput={setRawInput}
           />
           <OutputArea
             decodeResult={decodeResult}
+            detectedType={detectedType}
           />
         </main>
       </div>

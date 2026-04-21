@@ -52,7 +52,8 @@ export function tryExtractPublicKeyCredential(
   const response = obj.response as Record<string, unknown>;
 
   // Decode rawId from base64url
-  const rawId = safeBase64urlDecode(obj.rawId as string);
+  const rawIdB64 = obj.rawId as string;
+  const rawId = safeBase64urlDecode(rawIdB64);
   if (!rawId) return null;
 
   // Determine inner payload: prefer attestationObject, fall back to authenticatorData
@@ -75,16 +76,47 @@ export function tryExtractPublicKeyCredential(
   let clientDataJSON: Uint8Array | undefined;
   if (typeof response.clientDataJSON === "string") {
     const decoded = safeBase64urlDecode(response.clientDataJSON);
-    if (decoded) {
-      clientDataJSON = decoded;
-    }
-    // Silently swallow decode errors per spec
+    if (decoded) clientDataJSON = decoded;
+  }
+
+  // Optional outer fields
+  const credentialType = typeof obj.type === "string" ? obj.type : undefined;
+  const authenticatorAttachment =
+    typeof obj.authenticatorAttachment === "string" ? obj.authenticatorAttachment : undefined;
+
+  const transports = Array.isArray(response.transports)
+    ? (response.transports as unknown[]).filter((t): t is string => typeof t === "string")
+    : undefined;
+
+  const publicKeyAlgorithm =
+    typeof response.publicKeyAlgorithm === "number" ? response.publicKeyAlgorithm : undefined;
+
+  let publicKey: Uint8Array | undefined;
+  if (typeof response.publicKey === "string") {
+    const decoded = safeBase64urlDecode(response.publicKey);
+    if (decoded) publicKey = decoded;
+  }
+
+  let clientExtensionResults: Record<string, unknown> | undefined;
+  if (
+    typeof obj.clientExtensionResults === "object" &&
+    obj.clientExtensionResults !== null &&
+    !Array.isArray(obj.clientExtensionResults)
+  ) {
+    clientExtensionResults = obj.clientExtensionResults as Record<string, unknown>;
   }
 
   return {
     rawId,
+    rawIdB64,
     innerBytes,
     innerKind,
     clientDataJSON,
+    credentialType,
+    authenticatorAttachment,
+    transports,
+    publicKeyAlgorithm,
+    publicKey,
+    clientExtensionResults,
   };
 }

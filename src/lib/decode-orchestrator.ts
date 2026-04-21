@@ -27,7 +27,8 @@ import { decodeAttestationObject } from "@/lib/decode-attestation";
 import { decodeAssertion } from "@/lib/decode-assertion";
 import { decodeClientDataJSON } from "@/lib/decode-clientdata";
 import { decode } from "cbor-x/decode";
-import type { PayloadType, DecodeResult } from "@/lib/types";
+import type { PayloadType, DecodeResult, PublicKeyCredentialEnvelope } from "@/lib/types";
+import { resolveAlg } from "@/lib/cose-map";
 
 /**
  * Route a payload type + raw bytes to the correct decoder.
@@ -85,5 +86,69 @@ export function decodePayload(
         error: `Unknown payload type: ${String(exhaustive)}`,
       };
     }
+  }
+}
+
+/**
+ * Decode a full PublicKeyCredential JSON envelope into a unified result.
+ * Combines outer fields (id, type, transports, publicKey, etc.) with decoded
+ * inner response fields (attestationObject or authenticatorData + clientDataJSON).
+ * Never throws.
+ */
+export function decodeFullCredential(envelope: PublicKeyCredentialEnvelope): DecodeResult {
+  try {
+    const response: {
+      transports?: string[];
+      publicKeyAlgorithm?: { raw: number; name: string };
+      publicKey?: Uint8Array;
+      attestationObject?: import("@/lib/types").DecodedAttestationObject;
+      authenticatorData?: import("@/lib/types").DecodedAuthData;
+      clientDataJSON?: import("@/lib/types").DecodedClientDataJSON;
+    } = {};
+
+    if (envelope.transports) response.transports = envelope.transports;
+    if (envelope.publicKeyAlgorithm !== undefined) {
+      response.publicKeyAlgorithm = resolveAlg(envelope.publicKeyAlgorithm);
+    }
+    if (envelope.publicKey) response.publicKey = envelope.publicKey;
+
+    if (envelope.innerKind === "attestationObject") {
+      const inner = decodeAttestationObject(envelope.innerBytes);
+      if (!inner.ok) {
+        return { ok: false, error: `attestationObject: ${inner.error}`, suggestion: inner.suggestion };
+      }
+      response.attestationObject = inner.data;
+    } else {
+      const inner = decodeAssertion(envelope.innerBytes);
+      if (!inner.ok) {
+        return { ok: false, error: `authenticatorData: ${inner.error}`, suggestion: inner.suggestion };
+      }
+      response.authenticatorData = inner.data.authenticatorData;
+    }
+
+    if (envelope.clientDataJSON) {
+      const cdjResult = decodeClientDataJSON(envelope.clientDataJSON);
+      if (cdjResult.ok) {
+        response.clientDataJSON = cdjResult.data;
+      }
+    }
+
+    return {
+      ok: true,
+      type: "publicKeyCredential",
+      data: {
+        id: envelope.rawIdB64,
+        credentialId: envelope.rawId,
+        credentialType: envelope.credentialType ?? "public-key",
+        authenticatorAttachment: envelope.authenticatorAttachment,
+        clientExtensionResults: envelope.clientExtensionResults,
+        response,
+      },
+    };
+  } catch (e) {
+    return {
+      ok: false,
+      error: `Failed to decode PublicKeyCredential: ${e instanceof Error ? e.message : String(e)}`,
+    };
   }
 }

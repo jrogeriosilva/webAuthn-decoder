@@ -69,6 +69,7 @@ export type DecodeResult =
   | { ok: true; type: "authenticatorData"; data: DecodedAuthData }
   | { ok: true; type: "clientDataJSON"; data: DecodedClientDataJSON }
   | { ok: true; type: "assertion"; data: DecodedAssertion }
+  | { ok: true; type: "publicKeyCredential"; data: DecodedPublicKeyCredential }
   | { ok: true; type: "raw-cbor"; data: unknown }
   | { ok: false; error: string; suggestion?: string };
 
@@ -76,7 +77,31 @@ export type DecodeResult =
 /** Extracted fields from a PublicKeyCredential JSON envelope. */
 export interface PublicKeyCredentialEnvelope {
   rawId: Uint8Array;
+  rawIdB64: string;
   innerBytes: Uint8Array;
   innerKind: "attestationObject" | "authenticatorData";
   clientDataJSON?: Uint8Array;
+  credentialType?: string;
+  authenticatorAttachment?: string;
+  transports?: string[];
+  publicKeyAlgorithm?: number;
+  publicKey?: Uint8Array;
+  clientExtensionResults?: Record<string, unknown>;
+}
+
+/** Fully decoded PublicKeyCredential JSON response (registration or authentication). */
+export interface DecodedPublicKeyCredential {
+  id: string;
+  credentialId: Uint8Array;
+  credentialType: string;
+  authenticatorAttachment?: string;
+  clientExtensionResults?: Record<string, unknown>;
+  response: {
+    transports?: string[];
+    publicKeyAlgorithm?: { raw: number; name: string };
+    publicKey?: Uint8Array;
+    attestationObject?: DecodedAttestationObject;
+    authenticatorData?: DecodedAuthData;
+    clientDataJSON?: DecodedClientDataJSON;
+  };
 }

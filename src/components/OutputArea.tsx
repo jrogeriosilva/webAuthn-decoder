@@ -1,12 +1,17 @@
-import type { DecodeResult } from "@/lib/types"
+import type { DecodeResult, PayloadType } from "@/lib/types"
 import { preprocessForTree } from "@/lib/tree-preprocess"
 import { DecodeTreeView } from "@/components/DecodeTreeView"
+import { Badge } from "@/components/ui/badge"
+import { payloadTypeLabel } from "@/lib/payload-type-detection"
+
+type DetectedType = PayloadType | "publicKeyCredential"
 
 interface OutputAreaProps {
   decodeResult: DecodeResult | null
+  detectedType: DetectedType | null
 }
 
-export function OutputArea({ decodeResult }: OutputAreaProps) {
+export function OutputArea({ decodeResult, detectedType }: OutputAreaProps) {
   if (!decodeResult) {
     return (
       <div className="min-h-[200px] rounded-md border border-border bg-card p-4 text-sm text-muted-foreground">
@@ -30,6 +35,14 @@ export function OutputArea({ decodeResult }: OutputAreaProps) {
 
   return (
     <div className="min-h-[200px] rounded-md border border-border bg-card p-4">
+      {detectedType && (
+        <div className="mb-3 flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">Detected</span>
+          <Badge variant="secondary" className="font-mono text-xs">
+            {payloadTypeLabel(detectedType)}
+          </Badge>
+        </div>
+      )}
       <DecodeTreeView tree={tree} />
     </div>
   )

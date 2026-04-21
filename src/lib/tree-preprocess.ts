@@ -16,6 +16,7 @@ import type {
   DecodedAuthData,
   DecodedAssertion,
   DecodedClientDataJSON,
+  DecodedPublicKeyCredential,
   CoseKeyInfo,
   AuthDataFlags,
 } from "@/lib/types";
@@ -198,6 +199,61 @@ function processClientDataJSON(
 }
 
 /**
+ * Process a full PublicKeyCredential decode result into tree shape.
+ */
+function processPublicKeyCredential(
+  data: DecodedPublicKeyCredential
+): Record<string, unknown> {
+  const tree: Record<string, unknown> = {
+    id: `${data.id} [${data.credentialId.length} bytes]`,
+    credentialId: bytesToDisplayHex(data.credentialId),
+    type: data.credentialType,
+  };
+
+  if (data.authenticatorAttachment !== undefined) {
+    tree.authenticatorAttachment = data.authenticatorAttachment;
+  }
+
+  if (data.clientExtensionResults !== undefined) {
+    tree.clientExtensionResults = deepConvert(data.clientExtensionResults, 0);
+  }
+
+  const response: Record<string, unknown> = {};
+
+  if (data.response.transports) {
+    response.transports = data.response.transports;
+  }
+
+  if (data.response.publicKeyAlgorithm !== undefined) {
+    response.publicKeyAlgorithm = `${data.response.publicKeyAlgorithm.raw} (${data.response.publicKeyAlgorithm.name})`;
+  }
+
+  if (data.response.publicKey) {
+    response.publicKey = bytesToDisplayHex(data.response.publicKey, 32);
+  }
+
+  if (data.response.attestationObject) {
+    response.attestationObject = {
+      fmt: data.response.attestationObject.fmt,
+      authData: processAuthData(data.response.attestationObject.authData),
+      attStmt: deepConvert(data.response.attestationObject.attStmt, 0),
+    };
+  }
+
+  if (data.response.authenticatorData) {
+    response.authenticatorData = processAuthData(data.response.authenticatorData);
+  }
+
+  if (data.response.clientDataJSON) {
+    response.clientDataJSON = processClientDataJSON(data.response.clientDataJSON);
+  }
+
+  tree.response = response;
+
+  return tree;
+}
+
+/**
  * Main preprocessing entry point.
  * Transforms a DecodeResult into a display-ready plain object for react-json-view-lite.
  */
@@ -226,6 +282,9 @@ export function preprocessForTree(
       break;
     case "authenticatorData":
       tree = processAuthData(result.data);
+      break;
+    case "publicKeyCredential":
+      tree = processPublicKeyCredential(result.data);
       break;
     case "raw-cbor":
       tree = deepConvert(result.data, 0) as Record<string, unknown>;

@@ -5,7 +5,7 @@ export interface DecodeTreeViewProps {
   tree: Record<string, unknown>;
 }
 
-const shouldExpandNode = (level: number): boolean => level < 2;
+const shouldExpandNode = (): boolean => true;
 
 export function DecodeTreeView({ tree }: DecodeTreeViewProps) {
   return (
