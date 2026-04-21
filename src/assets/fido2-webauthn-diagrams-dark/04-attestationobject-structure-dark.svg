@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 680" font-family="'Inter', 'Segoe UI', system-ui, sans-serif">
+  <rect width="1100" height="680" fill="#0b1120"/>
+
+  <!-- Title -->
+  <text x="550" y="38" text-anchor="middle" font-size="22" font-weight="700" fill="#f1f5f9">Decoding the attestationObject</text>
+  <text x="550" y="62" text-anchor="middle" font-size="13" fill="#94a3b8">A CBOR-encoded map with three top-level keys — returned only during Registration</text>
+
+  <!-- Root attestationObject -->
+  <rect x="400" y="90" width="300" height="60" rx="8" fill="#1e293b" stroke="#475569" stroke-width="1"/>
+  <text x="550" y="115" text-anchor="middle" font-size="14" font-weight="700" fill="#f1f5f9">attestationObject</text>
+  <text x="550" y="135" text-anchor="middle" font-size="11" fill="#94a3b8">CBOR map • 3 keys</text>
+
+  <!-- Branch lines -->
+  <g stroke="#475569" stroke-width="1.5" fill="none">
+    <path d="M 550 150 L 550 180 L 210 180 L 210 210"/>
+    <path d="M 550 180 L 550 210"/>
+    <path d="M 550 180 L 890 180 L 890 210"/>
+  </g>
+
+  <!-- fmt -->
+  <rect x="60" y="210" width="300" height="90" rx="6" fill="#172554" stroke="#3b82f6" stroke-width="1.5"/>
+  <rect x="60" y="210" width="300" height="26" rx="6" fill="#2563eb"/>
+  <rect x="60" y="224" width="300" height="12" fill="#2563eb"/>
+  <text x="210" y="228" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">fmt</text>
+  <text x="210" y="258" text-anchor="middle" font-size="11" fill="#93c5fd" font-weight="600">Attestation format identifier</text>
+  <text x="210" y="278" text-anchor="middle" font-size="10.5" fill="#e2e8f0">Tells the server how to interpret</text>
+  <text x="210" y="292" text-anchor="middle" font-size="10.5" fill="#e2e8f0">the attStmt below</text>
+
+  <!-- authData -->
+  <rect x="400" y="210" width="300" height="90" rx="6" fill="#052e2b" stroke="#10b981" stroke-width="1.5"/>
+  <rect x="400" y="210" width="300" height="26" rx="6" fill="#059669"/>
+  <rect x="400" y="224" width="300" height="12" fill="#059669"/>
+  <text x="550" y="228" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">authData</text>
+  <text x="550" y="258" text-anchor="middle" font-size="11" fill="#6ee7b7" font-weight="600">Authenticator data bytes</text>
+  <text x="550" y="278" text-anchor="middle" font-size="10.5" fill="#e2e8f0">Raw binary frame with rpIdHash,</text>
+  <text x="550" y="292" text-anchor="middle" font-size="10.5" fill="#e2e8f0">flags, signCount, credential data</text>
+
+  <!-- attStmt -->
+  <rect x="740" y="210" width="300" height="90" rx="6" fill="#422006" stroke="#f59e0b" stroke-width="1.5"/>
+  <rect x="740" y="210" width="300" height="26" rx="6" fill="#d97706"/>
+  <rect x="740" y="224" width="300" height="12" fill="#d97706"/>
+  <text x="890" y="228" text-anchor="middle" font-size="13" font-weight="700" fill="#ffffff">attStmt</text>
+  <text x="890" y="258" text-anchor="middle" font-size="11" fill="#fbbf24" font-weight="600">Attestation statement</text>
+  <text x="890" y="278" text-anchor="middle" font-size="10.5" fill="#e2e8f0">CBOR map — structure varies</text>
+  <text x="890" y="292" text-anchor="middle" font-size="10.5" fill="#e2e8f0">depending on fmt value</text>
+
+  <!-- Formats grid header -->
+  <text x="550" y="350" text-anchor="middle" font-size="16" font-weight="700" fill="#f1f5f9">Common fmt values</text>
+  <text x="550" y="370" text-anchor="middle" font-size="12" fill="#94a3b8">What the attestation statement looks like for each format</text>
+
+  <!-- Format cards grid - 6 cards -->
+  <!-- Row 1 -->
+  <g>
+    <!-- none -->
+    <rect x="40" y="390" width="330" height="80" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1.5"/>
+    <rect x="40" y="390" width="6" height="80" fill="#94a3b8"/>
+    <text x="60" y="414" font-size="13" font-weight="700" fill="#f1f5f9" font-family="'JetBrains Mono', monospace">none</text>
+    <text x="60" y="432" font-size="11" fill="#e2e8f0">No attestation provided</text>
+    <text x="60" y="450" font-size="10" fill="#94a3b8">Platform authenticators:</text>
+    <text x="60" y="463" font-size="10" fill="#cbd5e1" font-weight="600">Face ID • Windows Hello • Android biometrics</text>
+
+    <!-- packed -->
+    <rect x="385" y="390" width="330" height="80" rx="6" fill="#172554" stroke="#2563eb" stroke-width="1.5"/>
+    <rect x="385" y="390" width="6" height="80" fill="#60a5fa"/>
+    <text x="405" y="414" font-size="13" font-weight="700" fill="#f1f5f9" font-family="'JetBrains Mono', monospace">packed</text>
+    <text x="405" y="432" font-size="11" fill="#e2e8f0">Compact general-purpose format</text>
+    <text x="405" y="450" font-size="10" fill="#94a3b8">Defined by WebAuthn spec — used by:</text>
+    <text x="405" y="463" font-size="10" fill="#cbd5e1" font-weight="600">most security keys &amp; many platform authenticators</text>
+
+    <!-- fido-u2f -->
+    <rect x="730" y="390" width="330" height="80" rx="6" fill="#422006" stroke="#d97706" stroke-width="1.5"/>
+    <rect x="730" y="390" width="6" height="80" fill="#fbbf24"/>
+    <text x="750" y="414" font-size="13" font-weight="700" fill="#f1f5f9" font-family="'JetBrains Mono', monospace">fido-u2f</text>
+    <text x="750" y="432" font-size="11" fill="#e2e8f0">Legacy U2F compatibility format</text>
+    <text x="750" y="450" font-size="10" fill="#94a3b8">Seen on:</text>
+    <text x="750" y="463" font-size="10" fill="#cbd5e1" font-weight="600">older YubiKeys &amp; pre-FIDO2 security keys</text>
+  </g>
+
+  <!-- Row 2 -->
+  <g>
+    <!-- tpm -->
+    <rect x="40" y="485" width="330" height="80" rx="6" fill="#2e1065" stroke="#7c3aed" stroke-width="1.5"/>
+    <rect x="40" y="485" width="6" height="80" fill="#a78bfa"/>
+    <text x="60" y="509" font-size="13" font-weight="700" fill="#f1f5f9" font-family="'JetBrains Mono', monospace">tpm</text>
+    <text x="60" y="527" font-size="11" fill="#e2e8f0">Trusted Platform Module attestation</text>
+    <text x="60" y="545" font-size="10" fill="#94a3b8">Used by:</text>
+    <text x="60" y="558" font-size="10" fill="#cbd5e1" font-weight="600">Windows Hello for Business (with TPM present)</text>
+
+    <!-- android-key -->
+    <rect x="385" y="485" width="330" height="80" rx="6" fill="#052e2b" stroke="#059669" stroke-width="1.5"/>
+    <rect x="385" y="485" width="6" height="80" fill="#34d399"/>
+    <text x="405" y="509" font-size="13" font-weight="700" fill="#f1f5f9" font-family="'JetBrains Mono', monospace">android-key</text>
+    <text x="405" y="527" font-size="11" fill="#e2e8f0">Android Keystore attestation</text>
+    <text x="405" y="545" font-size="10" fill="#94a3b8">Used on:</text>
+    <text x="405" y="558" font-size="10" fill="#cbd5e1" font-weight="600">Android devices with hardware-backed key storage</text>
+
+    <!-- apple -->
+    <rect x="730" y="485" width="330" height="80" rx="6" fill="#450a0a" stroke="#dc2626" stroke-width="1.5"/>
+    <rect x="730" y="485" width="6" height="80" fill="#f87171"/>
+    <text x="750" y="509" font-size="13" font-weight="700" fill="#f1f5f9" font-family="'JetBrains Mono', monospace">apple</text>
+    <text x="750" y="527" font-size="11" fill="#e2e8f0">Apple Anonymous Attestation</text>
+    <text x="750" y="545" font-size="10" fill="#94a3b8">Since iOS 14 / macOS 11:</text>
+    <text x="750" y="558" font-size="10" fill="#cbd5e1" font-weight="600">Touch ID • Face ID • iPhone Secure Enclave</text>
+  </g>
+
+  <!-- Bottom callout -->
+  <rect x="40" y="590" width="1020" height="72" rx="6" fill="#422006" stroke="#f59e0b" stroke-width="1.5" opacity="0.85"/>
+  <circle cx="54" cy="609" r="7" fill="#f59e0b"/>
+  <text x="54" y="613" text-anchor="middle" font-size="10" font-weight="700" fill="#0b1120">i</text>
+  <text x="70" y="613" font-size="12" font-weight="700" fill="#fbbf24">Why attestation matters</text>
+  <text x="60" y="633" font-size="11" fill="#e2e8f0">The attestation statement is a cryptographic proof from the authenticator vendor that this device is a genuine model. Most deployments accept</text>
+  <text x="60" y="651" font-size="11" fill="#e2e8f0"><tspan font-family="'JetBrains Mono', monospace" font-weight="700" fill="#fcd34d">fmt: "none"</tspan> because the full verification chain is complex — only enable it when device provenance is a real requirement (e.g., regulated industries).</text>
+</svg>

@@ -1,0 +1,173 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 720" font-family="'Inter', 'Segoe UI', system-ui, sans-serif">
+  <rect width="1100" height="720" fill="#0b1120"/>
+
+  <!-- Title -->
+  <text x="550" y="38" text-anchor="middle" font-size="22" font-weight="700" fill="#f1f5f9">authenticatorData — Byte Layout</text>
+  <text x="550" y="62" text-anchor="middle" font-size="13" fill="#94a3b8">Manually packed binary structure (not CBOR) — signed directly by the authenticator</text>
+
+  <!-- Byte ruler -->
+  <g font-size="10" fill="#94a3b8">
+    <text x="40" y="100" font-weight="600">Byte:</text>
+    <text x="100" y="100" text-anchor="middle">0</text>
+    <text x="260" y="100" text-anchor="middle">31</text>
+    <text x="310" y="100" text-anchor="middle">32</text>
+    <text x="380" y="100" text-anchor="middle">33</text>
+    <text x="515" y="100" text-anchor="middle">36</text>
+    <text x="560" y="100" text-anchor="middle">37</text>
+    <text x="900" y="100" text-anchor="middle">...</text>
+    <text x="1020" y="100" text-anchor="middle">N</text>
+  </g>
+
+  <!-- Main layout bar -->
+  <g>
+    <!-- rpIdHash (32 bytes) -->
+    <rect x="70" y="110" width="220" height="60" fill="#172554" stroke="#3b82f6" stroke-width="1.5"/>
+    <text x="180" y="134" text-anchor="middle" font-size="12" font-weight="700" fill="#93c5fd">rpIdHash</text>
+    <text x="180" y="152" text-anchor="middle" font-size="10" fill="#bfdbfe">32 bytes</text>
+    <text x="180" y="164" text-anchor="middle" font-size="9" fill="#cbd5e1">SHA-256(rpId)</text>
+
+    <!-- flags (1 byte) -->
+    <rect x="290" y="110" width="50" height="60" fill="#422006" stroke="#f59e0b" stroke-width="1.5"/>
+    <text x="315" y="134" text-anchor="middle" font-size="11" font-weight="700" fill="#fbbf24">flags</text>
+    <text x="315" y="152" text-anchor="middle" font-size="10" fill="#fcd34d">1 byte</text>
+    <text x="315" y="164" text-anchor="middle" font-size="9" fill="#cbd5e1">bitmask</text>
+
+    <!-- signCount (4 bytes) -->
+    <rect x="340" y="110" width="170" height="60" fill="#2e1065" stroke="#8b5cf6" stroke-width="1.5"/>
+    <text x="425" y="134" text-anchor="middle" font-size="12" font-weight="700" fill="#c4b5fd">signCount</text>
+    <text x="425" y="152" text-anchor="middle" font-size="10" fill="#ddd6fe">4 bytes (uint32 BE)</text>
+    <text x="425" y="164" text-anchor="middle" font-size="9" fill="#cbd5e1">clone detection</text>
+
+    <!-- attestedCredentialData (variable) -->
+    <rect x="510" y="110" width="380" height="60" fill="#052e2b" stroke="#10b981" stroke-width="1.5"/>
+    <text x="700" y="134" text-anchor="middle" font-size="12" font-weight="700" fill="#6ee7b7">attestedCredentialData</text>
+    <text x="700" y="152" text-anchor="middle" font-size="10" fill="#a7f3d0">variable length — only if AT flag set</text>
+    <text x="700" y="164" text-anchor="middle" font-size="9" fill="#cbd5e1">contains AAGUID + credId + COSE public key</text>
+
+    <!-- extensions (variable) -->
+    <rect x="890" y="110" width="140" height="60" fill="#450a0a" stroke="#ef4444" stroke-width="1.5"/>
+    <text x="960" y="134" text-anchor="middle" font-size="11" font-weight="700" fill="#fca5a5">extensions</text>
+    <text x="960" y="152" text-anchor="middle" font-size="10" fill="#fecaca">CBOR map</text>
+    <text x="960" y="164" text-anchor="middle" font-size="9" fill="#cbd5e1">only if ED flag set</text>
+  </g>
+
+  <!-- FLAGS BYTE DETAIL -->
+  <g>
+    <line x1="315" y1="170" x2="315" y2="210" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3 3"/>
+    <line x1="315" y1="210" x2="550" y2="210" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3 3"/>
+    <line x1="550" y1="210" x2="550" y2="240" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3 3"/>
+
+    <text x="40" y="250" font-size="13" font-weight="700" fill="#f1f5f9">Flags byte — bit-by-bit (MSB → LSB)</text>
+
+    <!-- Flags bits -->
+    <g font-size="10.5">
+      <!-- Bit 7 - ED -->
+      <rect x="40" y="265" width="100" height="68" fill="#422006" stroke="#f59e0b"/>
+      <text x="90" y="283" text-anchor="middle" font-size="9" fill="#fcd34d">bit 7</text>
+      <text x="90" y="302" text-anchor="middle" font-weight="700" fill="#fbbf24">ED</text>
+      <text x="90" y="317" text-anchor="middle" font-size="9" fill="#cbd5e1">Extension</text>
+      <text x="90" y="328" text-anchor="middle" font-size="9" fill="#cbd5e1">Data present</text>
+
+      <!-- Bit 6 - AT -->
+      <rect x="140" y="265" width="100" height="68" fill="#052e2b" stroke="#10b981"/>
+      <text x="190" y="283" text-anchor="middle" font-size="9" fill="#a7f3d0">bit 6</text>
+      <text x="190" y="302" text-anchor="middle" font-weight="700" fill="#6ee7b7">AT</text>
+      <text x="190" y="317" text-anchor="middle" font-size="9" fill="#cbd5e1">Attested Cred.</text>
+      <text x="190" y="328" text-anchor="middle" font-size="9" fill="#cbd5e1">Data included</text>
+
+      <!-- Bit 5 - reserved -->
+      <rect x="240" y="265" width="70" height="68" fill="#1e293b" stroke="#475569"/>
+      <text x="275" y="283" text-anchor="middle" font-size="9" fill="#94a3b8">bit 5</text>
+      <text x="275" y="302" text-anchor="middle" font-weight="700" fill="#94a3b8">—</text>
+      <text x="275" y="317" text-anchor="middle" font-size="9" fill="#94a3b8">reserved</text>
+
+      <!-- Bit 4 - BS -->
+      <rect x="310" y="265" width="100" height="68" fill="#500724" stroke="#ec4899"/>
+      <text x="360" y="283" text-anchor="middle" font-size="9" fill="#fbcfe8">bit 4</text>
+      <text x="360" y="302" text-anchor="middle" font-weight="700" fill="#f9a8d4">BS</text>
+      <text x="360" y="317" text-anchor="middle" font-size="9" fill="#cbd5e1">Backup State</text>
+      <text x="360" y="328" text-anchor="middle" font-size="9" fill="#cbd5e1">currently synced</text>
+
+      <!-- Bit 3 - BE -->
+      <rect x="410" y="265" width="100" height="68" fill="#500724" stroke="#ec4899"/>
+      <text x="460" y="283" text-anchor="middle" font-size="9" fill="#fbcfe8">bit 3</text>
+      <text x="460" y="302" text-anchor="middle" font-weight="700" fill="#f9a8d4">BE</text>
+      <text x="460" y="317" text-anchor="middle" font-size="9" fill="#cbd5e1">Backup Eligible</text>
+      <text x="460" y="328" text-anchor="middle" font-size="9" fill="#cbd5e1">(passkeys)</text>
+
+      <!-- Bit 2 - UV -->
+      <rect x="510" y="265" width="100" height="68" fill="#172554" stroke="#3b82f6"/>
+      <text x="560" y="283" text-anchor="middle" font-size="9" fill="#bfdbfe">bit 2</text>
+      <text x="560" y="302" text-anchor="middle" font-weight="700" fill="#93c5fd">UV</text>
+      <text x="560" y="317" text-anchor="middle" font-size="9" fill="#cbd5e1">User Verified</text>
+      <text x="560" y="328" text-anchor="middle" font-size="9" fill="#cbd5e1">(PIN / biometric)</text>
+
+      <!-- Bit 1 - reserved -->
+      <rect x="610" y="265" width="70" height="68" fill="#1e293b" stroke="#475569"/>
+      <text x="645" y="283" text-anchor="middle" font-size="9" fill="#94a3b8">bit 1</text>
+      <text x="645" y="302" text-anchor="middle" font-weight="700" fill="#94a3b8">—</text>
+      <text x="645" y="317" text-anchor="middle" font-size="9" fill="#94a3b8">reserved</text>
+
+      <!-- Bit 0 - UP -->
+      <rect x="680" y="265" width="100" height="68" fill="#172554" stroke="#3b82f6"/>
+      <text x="730" y="283" text-anchor="middle" font-size="9" fill="#bfdbfe">bit 0</text>
+      <text x="730" y="302" text-anchor="middle" font-weight="700" fill="#93c5fd">UP</text>
+      <text x="730" y="317" text-anchor="middle" font-size="9" fill="#cbd5e1">User Presence</text>
+      <text x="730" y="328" text-anchor="middle" font-size="9" fill="#cbd5e1">(touch / tap)</text>
+    </g>
+  </g>
+
+  <!-- attestedCredentialData DETAIL -->
+  <g>
+    <line x1="700" y1="170" x2="700" y2="400" stroke="#10b981" stroke-width="1" stroke-dasharray="3 3"/>
+
+    <text x="40" y="420" font-size="13" font-weight="700" fill="#f1f5f9">attestedCredentialData — internal layout (only if AT flag = 1)</text>
+
+    <!-- AAGUID -->
+    <rect x="40" y="440" width="180" height="70" fill="#052e2b" stroke="#10b981" stroke-width="1.5"/>
+    <text x="130" y="462" text-anchor="middle" font-size="11" font-weight="700" fill="#6ee7b7">AAGUID</text>
+    <text x="130" y="480" text-anchor="middle" font-size="10" fill="#a7f3d0">16 bytes</text>
+    <text x="130" y="497" text-anchor="middle" font-size="9" fill="#cbd5e1">identifies the</text>
+    <text x="130" y="508" text-anchor="middle" font-size="9" fill="#cbd5e1">authenticator model</text>
+
+    <!-- credIdLength -->
+    <rect x="220" y="440" width="150" height="70" fill="#052e2b" stroke="#10b981" stroke-width="1.5"/>
+    <text x="295" y="462" text-anchor="middle" font-size="11" font-weight="700" fill="#6ee7b7">credIdLength</text>
+    <text x="295" y="480" text-anchor="middle" font-size="10" fill="#a7f3d0">2 bytes (uint16 BE)</text>
+    <text x="295" y="497" text-anchor="middle" font-size="9" fill="#cbd5e1">length of</text>
+    <text x="295" y="508" text-anchor="middle" font-size="9" fill="#cbd5e1">credentialId that follows</text>
+
+    <!-- credentialId -->
+    <rect x="370" y="440" width="260" height="70" fill="#052e2b" stroke="#10b981" stroke-width="1.5"/>
+    <text x="500" y="462" text-anchor="middle" font-size="11" font-weight="700" fill="#6ee7b7">credentialId</text>
+    <text x="500" y="480" text-anchor="middle" font-size="10" fill="#a7f3d0">variable length</text>
+    <text x="500" y="497" text-anchor="middle" font-size="9" fill="#cbd5e1">unique ID for this</text>
+    <text x="500" y="508" text-anchor="middle" font-size="9" fill="#cbd5e1">credential (also in rawId)</text>
+
+    <!-- COSE key -->
+    <rect x="630" y="440" width="280" height="70" fill="#082f49" stroke="#0ea5e9" stroke-width="1.5"/>
+    <text x="770" y="462" text-anchor="middle" font-size="11" font-weight="700" fill="#7dd3fc">credentialPublicKey</text>
+    <text x="770" y="480" text-anchor="middle" font-size="10" fill="#bae6fd">CBOR-encoded COSE_Key</text>
+    <text x="770" y="497" text-anchor="middle" font-size="9" fill="#cbd5e1">the public key that will be used</text>
+    <text x="770" y="508" text-anchor="middle" font-size="9" fill="#cbd5e1">to verify future signatures</text>
+  </g>
+
+  <!-- Key insight callout -->
+  <g>
+    <rect x="40" y="545" width="1020" height="70" rx="6" fill="#422006" stroke="#f59e0b" stroke-width="1.5" opacity="0.85"/>
+    <polygon points="54,555 46,570 62,570" fill="#f59e0b"/>
+    <text x="54" y="568" text-anchor="middle" font-size="10" font-weight="700" fill="#0b1120">!</text>
+    <text x="70" y="568" font-size="12" font-weight="700" fill="#fbbf24">Parsing tip</text>
+    <text x="60" y="588" font-size="11" fill="#e2e8f0">The outer frame (rpIdHash, flags, signCount, AAGUID, credIdLength, credentialId) is <tspan font-weight="700" fill="#fcd34d">manually packed binary</tspan> — you must read it byte-by-byte.</text>
+    <text x="60" y="604" font-size="11" fill="#e2e8f0">Only the <tspan font-weight="700" fill="#7dd3fc">credentialPublicKey</tspan> at the end (and optional extensions) are CBOR. Running a CBOR decoder over the whole thing will fail.</text>
+  </g>
+
+  <!-- Relationship arrow -->
+  <g>
+    <line x1="500" y1="170" x2="500" y2="420" stroke="#10b981" stroke-width="1" stroke-dasharray="3 3" opacity="0.4"/>
+  </g>
+
+  <!-- Footer note -->
+  <text x="550" y="655" text-anchor="middle" font-size="10.5" fill="#94a3b8" font-style="italic">BE + BS flags were added with passkeys — BE indicates the authenticator can sync; BS indicates it currently is synced.</text>
+  <text x="550" y="675" text-anchor="middle" font-size="10.5" fill="#94a3b8" font-style="italic">signCount must be strictly increasing — a regression signals a possible cloned authenticator.</text>
+</svg>

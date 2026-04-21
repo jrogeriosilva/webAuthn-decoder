@@ -2,6 +2,7 @@ import { useState, useMemo } from "react"
 import { AppHeader } from "@/components/AppHeader"
 import { PayloadInput } from "@/components/PayloadInput"
 import { OutputArea } from "@/components/OutputArea"
+import { EducationalContent } from "@/components/EducationalContent"
 import { decodeFullCredential } from "@/lib/decode-orchestrator"
 import { autoDetectAndDecode } from "@/lib/payload-type-detection"
 import { tryExtractPublicKeyCredential } from "@/lib/publickeycredential-input"
@@ -30,7 +31,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div className="mx-auto max-w-3xl px-4">
+      <div className="mx-auto max-w-5xl px-4">
         <AppHeader />
         <main className="flex flex-col gap-8">
           <PayloadInput
@@ -41,6 +42,7 @@ function App() {
             decodeResult={decodeResult}
             detectedType={detectedType}
           />
+          <EducationalContent />
         </main>
       </div>
     </div>
