@@ -15,12 +15,12 @@ function CopyButton({ text }: { text: string }) {
     <button
       onClick={handleCopy}
       title="Copy value"
-      className="ml-1.5 inline-flex items-center opacity-0 group-hover/val:opacity-100 text-muted-foreground hover:text-foreground transition-opacity focus:opacity-100 outline-none"
+      className="ml-1.5 inline-flex items-center gap-0.5 px-1 py-0.5 rounded opacity-0 group-hover/val:opacity-100 text-white bg-white/10 hover:bg-white/20 transition-opacity focus:opacity-100 outline-none"
     >
       {copied ? (
-        <Check className="size-3 text-green-500" />
+        <Check className="size-3.5 text-green-400" />
       ) : (
-        <Copy className="size-3" />
+        <Copy className="size-3.5" />
       )}
     </button>
   )
