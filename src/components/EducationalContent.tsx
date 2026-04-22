@@ -1,7 +1,45 @@
+import { useEffect, useState } from "react"
 import lifecycleImg from "@/assets/fido2-webauthn-diagrams-dark/01-webauthn-credential-lifecycle-dark.svg"
 import anatomyImg from "@/assets/fido2-webauthn-diagrams-dark/02-publickeycredential-anatomy-dark.svg"
 import authdataImg from "@/assets/fido2-webauthn-diagrams-dark/03-authenticatordata-byte-layout-dark.svg"
 import attestationImg from "@/assets/fido2-webauthn-diagrams-dark/04-attestationobject-structure-dark.svg"
+
+type LightboxState = { src: string; alt: string } | null
+
+function DiagramImage({ src, alt }: { src: string; alt: string }) {
+  const [lightbox, setLightbox] = useState<LightboxState>(null)
+
+  useEffect(() => {
+    if (!lightbox) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setLightbox(null) }
+    window.addEventListener("keydown", onKey)
+    return () => window.removeEventListener("keydown", onKey)
+  }, [lightbox])
+
+  return (
+    <>
+      <img
+        src={src}
+        alt={alt}
+        className="w-full rounded-lg border border-border cursor-zoom-in transition-opacity hover:opacity-90"
+        onClick={() => setLightbox({ src, alt })}
+      />
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 cursor-zoom-out"
+          onClick={() => setLightbox(null)}
+        >
+          <img
+            src={lightbox.src}
+            alt={lightbox.alt}
+            className="max-w-full max-h-full rounded-lg shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
+    </>
+  )
+}
 
 export function EducationalContent() {
   return (
@@ -42,10 +80,9 @@ export function EducationalContent() {
 
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">The WebAuthn Credential Lifecycle</h2>
-        <img
+        <DiagramImage
           src={lifecycleImg}
           alt="Diagram showing the WebAuthn credential lifecycle: registration with navigator.credentials.create and authentication with navigator.credentials.get"
-          className="w-full rounded-lg border border-border"
         />
         <p className="text-muted-foreground">
           WebAuthn has two distinct ceremony types, each producing a different payload shape:
@@ -78,10 +115,9 @@ export function EducationalContent() {
 
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Anatomy of a PublicKeyCredential</h2>
-        <img
+        <DiagramImage
           src={anatomyImg}
           alt="Diagram showing the structure of a PublicKeyCredential object with fields: id, rawId, response.attestationObject, response.authenticatorData, response.clientDataJSON, response.signature, and response.userHandle"
-          className="w-full rounded-lg border border-border"
         />
         <p className="text-muted-foreground">
           The object returned by both WebAuthn ceremonies is a{" "}
@@ -107,10 +143,9 @@ export function EducationalContent() {
 
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Decoding the attestationObject</h2>
-        <img
+        <DiagramImage
           src={attestationImg}
           alt="Diagram showing the CBOR structure of attestationObject with keys: fmt, authData, and attStmt"
-          className="w-full rounded-lg border border-border"
         />
         <p className="text-muted-foreground">
           The <code className="font-mono text-xs bg-muted px-1 rounded">attestationObject</code> is a
@@ -136,10 +171,9 @@ export function EducationalContent() {
 
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Reading authenticatorData</h2>
-        <img
+        <DiagramImage
           src={authdataImg}
           alt="Diagram showing the byte layout of authenticatorData: rpIdHash (32 bytes), flags (1 byte), signCount (4 bytes), attestedCredentialData, and extensions"
-          className="w-full rounded-lg border border-border"
         />
         <p className="text-muted-foreground">
           Unlike most other fields in WebAuthn, <code className="font-mono text-xs bg-muted px-1 rounded">authenticatorData</code> is

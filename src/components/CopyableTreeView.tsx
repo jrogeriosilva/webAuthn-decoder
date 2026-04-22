@@ -124,7 +124,6 @@ function TreeNode({ value, depth }: TreeNodeProps) {
           ) : (
             <ChevronRight className="size-3" />
           )}
-          <span className="text-xs">{"{"}…{"}"}</span>
         </button>
         {expanded && (
           <div style={{ paddingLeft: indent + 14 }}>
