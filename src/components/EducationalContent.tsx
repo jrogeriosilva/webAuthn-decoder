@@ -21,7 +21,7 @@ function DiagramImage({ src, alt }: { src: string; alt: string }) {
       <img
         src={src}
         alt={alt}
-        className="w-full rounded-lg border border-border cursor-zoom-in transition-opacity hover:opacity-90"
+        className="w-full rounded-lg cursor-zoom-in transition-opacity hover:opacity-90"
         onClick={() => setLightbox({ src, alt })}
       />
       {lightbox && (
