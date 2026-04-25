@@ -3,8 +3,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { FormatBadge } from "@/components/FormatBadge"
 import { ErrorMessage } from "@/components/ErrorMessage"
+import { SamplePayloadsMenu } from "@/components/SamplePayloadsMenu"
 import { detectAndNormalize, type FormatResult } from "@/lib/format-detection"
 import { debounce } from "@/lib/debounce"
+import type { SamplePayload } from "@/data/sample-payloads"
 
 interface PayloadInputProps {
   onFormatResult: (result: FormatResult | null) => void
@@ -83,6 +85,13 @@ export function PayloadInput({ onFormatResult, onRawInput }: PayloadInputProps) 
     }
   }
 
+  const handleLoadSample = (sample: SamplePayload) => {
+    setInput(sample.raw)
+    onRawInput?.(sample.raw)
+    requestAnimationFrame(adjustHeight)
+    detectImmediate(sample.raw)
+  }
+
   return (
     <div className="flex flex-col gap-2">
       <Textarea
@@ -97,16 +106,19 @@ export function PayloadInput({ onFormatResult, onRawInput }: PayloadInputProps) 
       />
       <div className="flex items-center justify-between min-h-[28px]">
         <FormatBadge format={detectedFormat} />
-        {input && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleClear}
-            aria-label="Clear input"
-          >
-            Clear
-          </Button>
-        )}
+        <div className="flex items-center gap-1.5">
+          <SamplePayloadsMenu onSelect={handleLoadSample} />
+          {input && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleClear}
+              aria-label="Clear input"
+            >
+              Clear
+            </Button>
+          )}
+        </div>
       </div>
       <ErrorMessage error={errorMessage} />
     </div>
