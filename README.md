@@ -1,4 +1,4 @@
-# FIDO2 Lab
+# WebAuthn Decoder
 
 A browser-only developer tool for decoding FIDO2 / WebAuthn protocol data. Paste an encoded payload — base64url, hex, raw CBOR, or a full `PublicKeyCredential` JSON envelope — and inspect the decoded structure in an interactive tree view.
 

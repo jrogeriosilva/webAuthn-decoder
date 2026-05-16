@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-**FIDO2 Lab** — browser-only developer tool for decoding FIDO2/WebAuthn protocol data. Users paste encoded payloads (base64url, hex, raw CBOR, or full `PublicKeyCredential` JSON) and get an interactive tree view.
+**WebAuthn Decoder** — browser-only developer tool for decoding FIDO2/WebAuthn protocol data. Users paste encoded payloads (base64url, hex, raw CBOR, or full `PublicKeyCredential` JSON) and get an interactive tree view.
 
 **Hard constraints:**
 - Browser-only. No server, no network calls with payload data — users paste production credentials.

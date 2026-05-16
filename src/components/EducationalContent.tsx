@@ -52,7 +52,7 @@ export function EducationalContent() {
           Understanding FIDO2 and WebAuthn Payloads
         </h2>
         <p className="text-muted-foreground max-w-2xl">
-          FIDO2 Lab is a free, browser-based tool for decoding and inspecting WebAuthn protocol
+          WebAuthn Decoder is a free, browser-based tool for decoding and inspecting WebAuthn protocol
           data. Whether you are integrating passkeys into a web application, debugging a failed
           registration, or auditing an authenticator's attestation statement, this tool decodes
           every layer — from the outer CBOR envelope down to the raw COSE key — without sending
@@ -73,7 +73,7 @@ export function EducationalContent() {
           WebAuthn defines the JavaScript API that relying parties (websites) call, and the
           cryptographic data structures their servers must verify. CTAP2 defines how the browser
           communicates with an external authenticator such as a YubiKey, a phone, or a platform
-          authenticator built into a laptop's TPM. FIDO2 Lab focuses on the WebAuthn data
+          authenticator built into a laptop's TPM. WebAuthn Decoder focuses on the WebAuthn data
           structures that flow between the browser and the relying party server.
         </p>
       </section>
@@ -188,7 +188,7 @@ export function EducationalContent() {
           <li><strong className="text-foreground">Trailing bytes</strong> — extensions CBOR map (only if ED flag set).</li>
         </ul>
         <p className="text-muted-foreground">
-          FIDO2 Lab parses this structure byte-by-byte, correctly separating the binary sections
+          WebAuthn Decoder parses this structure byte-by-byte, correctly separating the binary sections
           from the embedded CBOR so each field is labeled and highlighted individually in the tree.
         </p>
       </section>
@@ -240,7 +240,7 @@ export function EducationalContent() {
       <section className="space-y-3">
         <h2 className="text-lg font-semibold">Common Debugging Scenarios</h2>
         <p className="text-muted-foreground">
-          Use FIDO2 Lab to diagnose these frequent integration problems:
+          Use WebAuthn Decoder to diagnose these frequent integration problems:
         </p>
         <ul className="list-disc list-inside space-y-2 text-muted-foreground">
           <li><strong className="text-foreground">Origin mismatch</strong> — the <code className="font-mono text-xs bg-muted px-1 rounded">origin</code> in <code className="font-mono text-xs bg-muted px-1 rounded">clientDataJSON</code> does not match the server's expected origin. Common cause: testing on <code className="font-mono text-xs bg-muted px-1 rounded">localhost</code> but comparing against a production domain, or a missing port number.</li>
@@ -256,7 +256,7 @@ export function EducationalContent() {
         <h2 className="text-lg font-semibold">Privacy &amp; Security of This Tool</h2>
         <p className="text-muted-foreground">
           WebAuthn payloads often contain real credential identifiers, user handles, and AAGUID values
-          that can identify both the user and their authenticator. FIDO2 Lab is designed so that
+          that can identify both the user and their authenticator. WebAuthn Decoder is designed so that
           none of this data ever leaves your browser:
         </p>
         <ul className="list-disc list-inside space-y-1 text-muted-foreground">
@@ -292,8 +292,8 @@ export function EducationalContent() {
               "The BE (Backup Eligibility) flag, introduced with passkeys, indicates that the authenticator is capable of syncing the private key to a cloud account (e.g. iCloud Keychain or Google Password Manager). The companion BS (Backup State) flag indicates whether the key is currently synced. Relying parties can choose to reject credentials where BE is set if they require single-device binding."
             ],
             [
-              "What formats can FIDO2 Lab decode?",
-              "FIDO2 Lab accepts: a full PublicKeyCredential JSON object (paste the JSON directly), a base64url-encoded attestationObject or authenticatorData, a hex-encoded payload, or raw CBOR bytes pasted as base64url. The tool auto-detects the format and selects the right decoder."
+              "What formats can WebAuthn Decoder decode?",
+              "WebAuthn Decoder accepts: a full PublicKeyCredential JSON object (paste the JSON directly), a base64url-encoded attestationObject or authenticatorData, a hex-encoded payload, or raw CBOR bytes pasted as base64url. The tool auto-detects the format and selects the right decoder."
             ],
             [
               "Can I use this tool offline?",

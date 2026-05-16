@@ -1,5 +1,5 @@
 {
-  "name": "fido2-scaffold",
+  "name": "webauthn-decoder",
   "private": true,
   "version": "0.0.0",
   "type": "module",
