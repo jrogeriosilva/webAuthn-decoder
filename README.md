@@ -17,6 +17,7 @@ Everything runs in the browser. No payload data is ever sent over the network, s
 - Looks up authenticator model names from the AAGUID registry
 - Copy any subtree or the full decoded output
 
+
 ## Getting started
 
 ```bash
